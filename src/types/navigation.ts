@@ -5,4 +5,6 @@ export type RootStackParamList = {
   Home: undefined;
   Register: undefined;
   ForgotPassword: undefined;
+  Articles: undefined;
+  ArticleDetails: { article: any };
 };
