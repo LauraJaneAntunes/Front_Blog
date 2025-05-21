@@ -13,11 +13,7 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ArticleScreen from './src/screens/ArticleScreen';
 import ArticleDetailsScreen from './src/screens/ArticleDetailsScreen';
-
-
-// import Perfil from './src/screens/Perfil';
-// import Artigos from './src/screens/Artigos';
-// import CriarArtigo from './src/screens/CriarArtigo';
+import Profile from './src/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -25,10 +21,10 @@ const Drawer = createDrawerNavigator();
 // Drawer navigator com as telas internas
 function DrawerNavigator() {
   return (
-    <Drawer.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+    <Drawer.Navigator screenOptions={{ headerShown: false }}>
       <Drawer.Screen name="Home" component={HomeScreen} />
-      {/* <Drawer.Screen name="Perfil" component={Perfil} />
-      <Drawer.Screen name="Meus Artigo" component={Artigos} />
+      <Drawer.Screen name="Profile" component={Profile} />
+      {/* <Drawer.Screen name="Meus Artigo" component={Artigos} />
       <Drawer.Screen name="Criar Novo Artigo" component={CriarArtigo} /> */}
     </Drawer.Navigator>
   );

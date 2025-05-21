@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Text style={styles.link}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Artigo')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Articles')}>
           <Text style={styles.link}>Artigo</Text>
         </TouchableOpacity>
       </View>
