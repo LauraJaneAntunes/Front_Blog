@@ -1,4 +1,25 @@
-Inicio do projeto
+Front de um aplicativo mobile de blog
+
+---
+
+
+Pacotes Instalados
+
+| Pacote                                                                            | Para quê serve                                          |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `@react-navigation/native`+`native-stack`                                     | Navegação entre telas                                  |
+| `react-native-screens`,`safe-area-context`,`gesture-handler`,`reanimated` | Dependências obrigatórias do React Navigation          |
+| `axios`                                                                         | Requisições HTTP à API                                |
+| `react-native-vector-icons`                                                     | Ícones (usados em botões, menus etc.)                  |
+| `expo-router`                                                                   | (opcional) Navegação baseada em arquivos, mais moderna |
+| `formik`+`yup`                                                                | Manipulação e validação de formulários              |
+| `jwt-decode`                                                                    | Para ler dados do token JWT do usuário logado           |
+
+
+
+---
+
+
 
 Estrutura
 
