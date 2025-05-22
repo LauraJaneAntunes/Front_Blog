@@ -1,12 +1,37 @@
 // src/screens/LoginScreen.tsx
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Formik } from 'formik';
 import { loginValidationSchema } from '../validations/authValidation';
 import Input from '../components/Input';
-import Button from '../components/Button';
+import Button from '../components/Button'
+import api from '../services/api';
 
 export default function LoginScreen({ navigation }: any) {
+
+  const handleLogin = async (values: { email: string; password: string }) => {
+    try {
+      const response = await api.post('/auth/login', {
+        email: values.email,
+        password: values.password,
+      });
+
+      const { token, user } = response.data;
+
+      // 👉 Aqui você pode salvar o token no AsyncStorage, SecureStore ou Context
+      console.log('Token:', token);
+      console.log('User:', user);
+
+      // Navegar para a tela Home
+      navigation.navigate('Home');
+    } catch (error: any) {
+      console.log(error);
+      Alert.alert(
+        'Erro no login',
+        error?.response?.data?.message || 'Ocorreu um erro. Verifique seus dados e tente novamente.'
+      );
+    }
+  };
   
   return (
     <View style={styles.container}>

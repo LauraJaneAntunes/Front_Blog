@@ -4,7 +4,7 @@ interface BabelAPI {
 
 interface BabelConfig {
     presets: string[];
-    plugins: string[];
+    plugins: (string | [string, Record<string, any>])[];
 }
 
 module.exports = function (api: BabelAPI): BabelConfig {
@@ -13,6 +13,10 @@ module.exports = function (api: BabelAPI): BabelConfig {
         presets: ['babel-preset-expo'],
         plugins: [
             'react-native-reanimated/plugin',
+        ['module:react-native-dotenv', {
+            moduleName: '@env',
+            path: '.env',
+        }],
         ],
     };
 };

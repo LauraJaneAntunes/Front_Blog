@@ -41,9 +41,8 @@ export default function App() {
         barStyle="light-content" 
       />
       <NavigationContainer>
-              <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+          <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
 
-        {/* <Stack.Navigator initialRouteName="Loading" screenOptions={{ headerShown: false }}> */}
           <Stack.Screen name="Loading" component={LoadingScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
