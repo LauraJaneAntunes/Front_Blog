@@ -4,7 +4,7 @@ import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { RootStackParamList } from './src/types/navigation';
+import { RootStackParamList } from './src/types';
 
 import LoadingScreen from './src/screens/LoadingScreen';
 import LoginScreen from './src/screens/LoginScreen';
@@ -13,7 +13,9 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ArticleScreen from './src/screens/ArticleScreen';
 import ArticleDetailsScreen from './src/screens/ArticleDetailsScreen';
-import Profile from './src/screens/ProfileScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import MyArticlesScreen from './src/screens/MyArticleScreen';
+import CreateArticleScreen from './src/screens/CreateArticleScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -23,9 +25,9 @@ function DrawerNavigator() {
   return (
     <Drawer.Navigator screenOptions={{ headerShown: false }}>
       <Drawer.Screen name="Home" component={HomeScreen} />
-      <Drawer.Screen name="Profile" component={Profile} />
-      {/* <Drawer.Screen name="Meus Artigo" component={Artigos} />
-      <Drawer.Screen name="Criar Novo Artigo" component={CriarArtigo} /> */}
+      <Drawer.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="MyArticles" component={MyArticlesScreen} />
+      <Stack.Screen name="CreateArticle" component={CreateArticleScreen} />
     </Drawer.Navigator>
   );
 }

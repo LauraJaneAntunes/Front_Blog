@@ -10,6 +10,8 @@ type InputProps = {
   secureTextEntry?: boolean;
   error?: string;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  multiline?: boolean;
+  style?: object;
 };
 
 const Input: React.FC<InputProps> = ({
@@ -20,12 +22,14 @@ const Input: React.FC<InputProps> = ({
   secureTextEntry = false,
   error,
   keyboardType = 'default',
+  multiline = false,
+  style,
 }) => {
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
-        style={[styles.input, error && styles.inputError]}
+        style={[styles.input, error && styles.inputError, style]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -33,6 +37,7 @@ const Input: React.FC<InputProps> = ({
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
         keyboardType={keyboardType}
+        multiline={multiline}
       />
       {!!error && <Text style={styles.error}>{error}</Text>}
     </View>

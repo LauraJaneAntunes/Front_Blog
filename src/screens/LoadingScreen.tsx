@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '../types/navigation';
+import { RootStackParamList } from '../types';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { useFonts as useIrishFonts, IrishGrover_400Regular } from '@expo-google-fonts/irish-grover';
 import { useFonts as useMontserratFonts, Montserrat_400Regular } from '@expo-google-fonts/montserrat';
