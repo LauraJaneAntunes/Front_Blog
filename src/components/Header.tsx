@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AntDesign } from '@expo/vector-icons'; // Ícone de +
+
 import ConfigScreen from '../screens/ConfigScreen';
 
 type HeaderProps = {
@@ -34,16 +36,18 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Avatar que abre o modal ConfigScreen */}
+        {/* Avatar com botão */}
         <TouchableOpacity onPress={openConfigMenu}>
-          <Image
-            source={{ uri: userImage }}
-            style={styles.avatar}
-          />
+          <View>
+            <Image source={{ uri: userImage }} style={styles.avatar} />
+            <View style={styles.plusIconContainer}>
+              <AntDesign name="pluscircle" size={16} color="#181818" />
+            </View>
+          </View>
         </TouchableOpacity>
       </SafeAreaView>
 
-      {/* Modal do ConfigScreen */}
+      {/* Modal */}
       <ConfigScreen visible={configVisible} onClose={closeConfigMenu} />
     </>
   );
@@ -76,6 +80,13 @@ const styles = StyleSheet.create({
   avatar: {
     width: 36,
     height: 36,
+    borderRadius: 100,
+  },
+  plusIconContainer: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: '#fff',
     borderRadius: 100,
   },
 });
