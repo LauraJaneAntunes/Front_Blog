@@ -12,7 +12,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import CreateArticle from './src/screens/CreateArticleScreen';
 import ArticlesScreen from './src/screens/ArticleScreen';
-import ArticleDetails from './src/screens/ArticleDetailsScreen';
+import ArticleDetailsScreen from './src/screens/ArticleDetailsScreen';
 import MyArticles from './src/screens/MyArticlesScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,7 +31,7 @@ return (
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Articles" component={ArticlesScreen} />
-            <Stack.Screen name="ArticleDetails" component={ArticleDetails} />
+            <Stack.Screen name="ArticleDetails" component={ArticleDetailsScreen} />
             <Stack.Screen name="MyArticles" component={MyArticles} />
             <Stack.Screen name="CreateArticle" component={CreateArticle} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
