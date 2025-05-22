@@ -1,4 +1,4 @@
-//src\types\navigation.tsx
+//src\types\index.tsx
 export type RootStackParamList = {
   Loading: undefined;
   Login: undefined;
@@ -7,4 +7,6 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   Articles: undefined;
   ArticleDetails: { article: any };
+  MyArticles: undefined;
+  CreateArticle: { article?: any };
 };
