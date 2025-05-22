@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import Header from 'components/Header';
 
 const screenWidth = Dimensions.get('window').width - 30;
 
@@ -19,6 +20,9 @@ const ArticleDetailsScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Header />
+      
+      {/* Back button */}
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}

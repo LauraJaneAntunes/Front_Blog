@@ -180,7 +180,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <Header userImage={userImage} />
+      <Header />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Avatar */}

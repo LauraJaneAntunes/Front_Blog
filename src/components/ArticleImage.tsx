@@ -1,11 +1,11 @@
-import { Dimensions, Image } from "react-native";
+import { Dimensions, Image } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 
 type SizeType = 'small' | 'medium' | 'large';
 
 interface ArticleImageProps {
-  src: string;
+  src?: string;
   alt: string;
   size?: SizeType;
 }
@@ -23,12 +23,16 @@ function ArticleImage({ src, alt, size = 'medium' }: ArticleImageProps) {
     borderRadius: 8,
   };
 
+  const fallbackImage = `https://source.unsplash.com/random/600x400?sig=${Math.floor(Math.random() * 1000)}`;
+
   return (
     <Image
-      source={{ uri: src }}
+      source={{ uri: src || fallbackImage }}
       style={style}
       resizeMode="cover"
       accessibilityLabel={alt}
     />
   );
 }
+
+export default ArticleImage;

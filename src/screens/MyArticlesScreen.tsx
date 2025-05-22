@@ -15,6 +15,7 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { getToken } from '../services/storage';
 import Header from '../components/Header';
 import Button from 'components/Button';
+import { formatDate } from '../utils/formatDate';
 
 const screenWidth = Dimensions.get('window').width - 30;
 
@@ -49,8 +50,8 @@ export default function MyArticlesScreen({ navigation }: any) {
         id: artigo.id,
         titulo: artigo.titulo,
         imagemDestacada: artigo.imagemDestacada || 'https://picsum.photos/100/100',
-        criadoEm: new Date(artigo.publicadoEm).toLocaleDateString('pt-BR'),
-        atualizadoEm: new Date(artigo.atualizadoEm || artigo.publicadoEm).toLocaleDateString('pt-BR'),
+        criadoEm: formatDate(artigo.publicadoEm),
+        atualizadoEm: formatDate(artigo.atualizadoEm || artigo.publicadoEm),
       }));
       setArticles(fetchedArticles);
     } catch (error) {
@@ -116,11 +117,9 @@ export default function MyArticlesScreen({ navigation }: any) {
     </View>
   );
 
-  const userImage = 'https://cdn-icons-png.flaticon.com/512/616/616408.png';
-
   return (
     <View style={styles.container}>
-      <Header userImage={userImage} />
+      <Header />
       <Text style={styles.screenTitle}>Meus Artigos</Text>
 
       {loading ? (

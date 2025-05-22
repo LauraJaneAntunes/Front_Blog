@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import * as Font from 'expo-font';
+import { formatDate } from '../utils/formatDate';
 import Header from '../components/Header';
 import { Dimensions } from 'react-native';
 
@@ -111,7 +113,7 @@ const ArticleCard = ({
       />
       <Text style={styles.articleTitle}>{article.title}</Text>
       <Text style={styles.articleAuthorDate}>
-        {article.author} - {article.date}
+        {article.author} - {formatDate(article.date)}
       </Text>
       {article.excerpt ? (
         <Text style={styles.articleExcerpt}>{article.excerpt}</Text>
@@ -163,16 +165,29 @@ const CarouselItem = ({
       <Text style={styles.carouselDescription}>{article.description}</Text>
       <View style={styles.carouselFooter}>
         <Text style={{ fontSize: 18 }}>❤️</Text>
-        <Text style={styles.carouselDate}>{article.date}</Text>
+        <Text style={styles.carouselDate}>{formatDate(article.date)}</Text>
       </View>
     </View>
   );
 };
 
 // Tela Home
-const HomeScreen = ({ navigation }: any) => {
-  const userImage = 'https://cdn-icons-png.flaticon.com/512/616/616408.png';
+const HomeScreen = ({ navigation }: any) => {  
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   
+useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync({
+        'IrishGrover-Regular': require('../../assets/fonts/IrishGrover-Regular.ttf'),
+      });
+      setFontsLoaded(true);
+    }
+    loadFonts();
+  }, []);
+
+  if (!fontsLoaded) {
+    return <View><Text>Carregando fontes...</Text></View>;
+  }
 
   const handleArticlePress = (id: string) => {
     navigation.navigate('Articles', { articleId: id });
@@ -181,7 +196,7 @@ const HomeScreen = ({ navigation }: any) => {
   return (
     <>
       <View style={styles.container}>
-        <Header userImage={userImage} />
+        <Header />
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Artigo em destaque */}
           <View style={styles.section}>
@@ -194,7 +209,7 @@ const HomeScreen = ({ navigation }: any) => {
 
           {/* Notícia */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>New</Text>
+            <Text style={styles.sectionNewTitle}>New</Text>
             {newsArticles.map((article) => (
               <NewsItem
                 key={article.id}
@@ -243,6 +258,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 10,
+  },
+  sectionNewTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 10,
+    fontFamily: 'IrishGrover-Regular'
   },
   articleCard: {
     backgroundColor: '#1e1e1e',

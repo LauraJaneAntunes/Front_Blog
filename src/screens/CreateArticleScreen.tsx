@@ -69,7 +69,7 @@ const CreateArticle = () => {
 
   return (
     <View style={styles.container}>
-      <Header userImage="https://cdn-icons-png.flaticon.com/512/616/616408.png" />
+      <Header />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.pageTitle}>{article ? 'Editar Artigo' : 'Criar Artigo'}</Text>
 
