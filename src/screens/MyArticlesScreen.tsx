@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,46 +8,52 @@ import {
   Modal,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
+import axios from 'axios';
 import { AntDesign, Feather } from '@expo/vector-icons';
+import {getToken} from '../services/storage';
+import Header from '../components/Header';
 
 const screenWidth = Dimensions.get('window').width - 30;
 
 type Article = {
-  id: string;
-  title: string;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
+  id: number;
+  titulo: string;
+  imagemDestacada: string;
+  criadoEm: string;
+  atualizadoEm: string;
 };
 
-const dummyData: Article[] = [
-  {
-    id: '1',
-    title: 'Dominando TypeScript: Por que a Tipagem Estática Está Transformando o Desenvolvimento JavaScript',
-    image: 'https://picsum.photos/100/100',
-    createdAt: '01/05/2025',
-    updatedAt: '15/05/2025',
-  },
-  {
-    id: '2',
-    title: 'Dominando TypeScript: Por que a Tipagem Estática Está Transformando o Desenvolvimento JavaScript',
-    image: 'https://picsum.photos/101/101',
-    createdAt: '20/04/2025',
-    updatedAt: '10/05/2025',
-  },
-  {
-    id: '3',
-    title: 'Dominando TypeScript: Por que a Tipagem Estática Está Transformando o Desenvolvimento JavaScript',
-    image: 'https://picsum.photos/102/102',
-    createdAt: '15/04/2025',
-    updatedAt: '05/05/2025',
-  },
-];
+export default function MyArticlesScreen({navigation}: any) {
 
-export default function MyArticlesScreen() {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://192.168.0.100:3000/api/artigos');
+      const fetchedArticles = response.data.map((artigo: any) => ({
+        id: artigo.id,
+        titulo: artigo.titulo,
+        imagemDestacada: artigo.imagemDestacada || 'https://picsum.photos/100/100',
+        criadoEm: new Date(artigo.publicadoEm).toLocaleDateString('pt-BR'),
+        atualizadoEm: new Date(artigo.atualizadoEm || artigo.publicadoEm).toLocaleDateString('pt-BR'),
+      }));
+      setArticles(fetchedArticles);
+    } catch (error) {
+      console.error('Erro ao buscar artigos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openDeleteModal = (article: Article) => {
     setSelectedArticle(article);
@@ -59,23 +65,34 @@ export default function MyArticlesScreen() {
     setSelectedArticle(null);
   };
 
-  const deleteArticle = (id: string) => {
-    console.log('Excluir artigo:', id);
-    // implementar lógica real de exclusão
-    closeModal();
+  const deleteArticle = async (id: number) => {
+    const token = await getToken();
+    try {
+
+    await axios.delete(`http://192.168.0.100:3000/api/artigos/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+      closeModal();
+      // Atualiza lista após deletar
+      setArticles(prev => prev.filter(article => article.id !== id));
+    } catch (error) {
+      console.error('Erro ao deletar artigo:', error);
+    }
   };
 
   const renderItem = ({ item }: { item: Article }) => (
     <View style={styles.card}>
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image source={{ uri: item.imagemDestacada }} style={styles.image} />
 
       <View style={styles.infoContainer}>
-        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.title}>{item.titulo}</Text>
 
         <View style={styles.bottomRow}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.date}>Criado em: {item.createdAt}</Text>
-            <Text style={styles.date}>Alterado em: {item.updatedAt}</Text>
+            <Text style={styles.date}>Criado em: {item.criadoEm}</Text>
+            <Text style={styles.date}>Alterado em: {item.atualizadoEm}</Text>
           </View>
         </View>
 
@@ -85,32 +102,39 @@ export default function MyArticlesScreen() {
               <AntDesign name="heart" size={16} color="#ff4444" />
             </TouchableOpacity>
             <Text style={styles.likesCount}>16</Text>
-        </View>
+          </View>
 
-        <View style={styles.actions}>
-         <TouchableOpacity onPress={() => openDeleteModal(item)}>
-          <Feather name="trash-2" size={20} color="#ff4444" />
-         </TouchableOpacity>
-         <TouchableOpacity onPress={() => console.log('Editar', item.id)}>
-          <Feather name="edit-2" size={20} color="#666" />
-         </TouchableOpacity>
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={() => openDeleteModal(item)}>
+              <Feather name="trash-2" size={20} color="#ff4444" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('CreateArticle', { article: item })}>
+              <Feather name="edit-2" size={20} color="#666" />
+            </TouchableOpacity>
+          </View>
         </View>
-     </View>
-    </View>
+      </View>
     </View>
   );
 
+  const userImage = 'https://cdn-icons-png.flaticon.com/512/616/616408.png';
+
   return (
     <View style={styles.container}>
+      <Header userImage={userImage} />
       <Text style={styles.screenTitle}>Meus Artigos</Text>
 
-      <FlatList
-        data={dummyData}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <FlatList
+          data={articles}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       {/* Modal de exclusão */}
       <Modal
@@ -125,14 +149,11 @@ export default function MyArticlesScreen() {
 
             {selectedArticle && (
               <View style={styles.articlePreview}>
+                <Image source={{ uri: selectedArticle.imagemDestacada }} style={styles.previewImage} />
                 <View style={styles.previewInfo}>
-                  <Text style={styles.previewTitle}>{selectedArticle.title}</Text>
-                  <Text style={styles.previewDate}>
-                    Criado em: {selectedArticle.createdAt}
-                  </Text>
-                  <Text style={styles.previewDate}>
-                    Alterado em: {selectedArticle.updatedAt}
-                  </Text>
+                  <Text style={styles.previewTitle}>{selectedArticle.titulo}</Text>
+                  <Text style={styles.previewDate}>Criado em: {selectedArticle.criadoEm}</Text>
+                  <Text style={styles.previewDate}>Alterado em: {selectedArticle.atualizadoEm}</Text>
                 </View>
               </View>
             )}
@@ -152,7 +173,7 @@ export default function MyArticlesScreen() {
 
               <TouchableOpacity
                 style={styles.deleteButton}
-                onPress={() => deleteArticle(selectedArticle?.id || '')}
+                onPress={() => deleteArticle(selectedArticle?.id || 0)}
                 activeOpacity={0.8}
               >
                 <Text style={styles.deleteButtonText}>Excluir</Text>
@@ -216,8 +237,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 10,
   },
-
   date: {
     fontSize: 12,
     color: '#666',

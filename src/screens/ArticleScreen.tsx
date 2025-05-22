@@ -41,7 +41,12 @@ const articles = [
   },
 ];
 
-const ArtigosScreen = ({ navigation }:any) => {
+const ArticleScreen = ({ navigation, route }:any) => {
+  // If a specific article ID is provided, filter to show just that article
+  const { articleId } = route.params || {};
+  const displayArticles = articleId 
+    ? articles.filter(article => article.id === articleId) 
+    : articles;
 
   const handlePress = (article: any) => {
     navigation.navigate('ArticleDetails', { article });
@@ -61,7 +66,7 @@ const ArtigosScreen = ({ navigation }:any) => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={articles}
+        data={displayArticles}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ padding: 15 }}
@@ -70,7 +75,7 @@ const ArtigosScreen = ({ navigation }:any) => {
   );
 };
 
-export default ArtigosScreen;
+export default ArticleScreen;
 
 const styles = StyleSheet.create({
   container: {

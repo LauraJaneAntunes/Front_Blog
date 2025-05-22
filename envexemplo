@@ -1,6 +1,0 @@
-# Altere o arquivo .env.example para: .env
-# Altere seu_ipv4_aqui para o número do seu ipv4. 
-# Para descobrir o ipv4, acesse seu terminal e use o comando:
-# Windows: ipconfig - Linux: ip addr show - Mac: ifconfig
-
-EXPO_PUBLIC_API_URL=http://seu_ipv4_aqui:3000

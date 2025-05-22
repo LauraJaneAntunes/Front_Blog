@@ -1,28 +1,25 @@
-// src/screens/LoginScreen.tsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Formik } from 'formik';
 import { loginValidationSchema } from '../validations/authValidation';
 import Input from '../components/Input';
-import Button from '../components/Button'
+import Button from '../components/Button';
 import api from '../services/api';
+import { saveToken } from '../services/storage';
 
 export default function LoginScreen({ navigation }: any) {
-
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('/users/login', {
         email: values.email,
-        password: values.password,
+        senha: values.password,
       });
 
       const { token, user } = response.data;
 
-      // 👉 Aqui você pode salvar o token no AsyncStorage, SecureStore ou Context
-      console.log('Token:', token);
-      console.log('User:', user);
+      await saveToken(token);
+      console.log('Token salvo com sucesso');
 
-      // Navegar para a tela Home
       navigation.navigate('Home');
     } catch (error: any) {
       console.log(error);
@@ -32,7 +29,7 @@ export default function LoginScreen({ navigation }: any) {
       );
     }
   };
-  
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bem-vindo de volta!</Text>
@@ -43,10 +40,7 @@ export default function LoginScreen({ navigation }: any) {
       <Formik
         initialValues={{ email: '', password: '' }}
         validationSchema={loginValidationSchema}
-        onSubmit={values => {
-          console.log(values);
-          navigation.navigate('Home');
-        }}
+        onSubmit={handleLogin}
       >
         {({ handleChange, handleSubmit, values, errors, touched }) => (
           <>
@@ -102,7 +96,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: '#1B1B1B',
     marginBottom: 80,
-    fontFamily: 'Montserrat'
+    fontFamily: 'Montserrat',
   },
   forgotContainer: {
     alignItems: 'flex-end',

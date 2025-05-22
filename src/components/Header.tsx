@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ConfigScreen from '../screens/ConfigScreen';
 
 type HeaderProps = {
   userImage: string;
@@ -10,27 +11,41 @@ type HeaderProps = {
 const Header: React.FC<HeaderProps> = ({ userImage }) => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
+  const [configVisible, setConfigVisible] = useState(false);
+
+  const openConfigMenu = () => {
+    setConfigVisible(true);
+  };
+
+  const closeConfigMenu = () => {
+    setConfigVisible(false);
+  };
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: insets.top, height: 60 + insets.top }]}>
-      {/* Links */}
-      <View style={styles.linksContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.link}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Articles')}>
-          <Text style={styles.link}>Artigo</Text>
-        </TouchableOpacity>
-      </View>
+    <>
+      <SafeAreaView style={[styles.container, { paddingTop: insets.top, height: 60 + insets.top }]}>
+        {/* Links */}
+        <View style={styles.linksContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <Text style={styles.link}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Articles')}>
+            <Text style={styles.link}>Artigo</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Foto do usuário que abre o Drawer */}
-      <TouchableOpacity onPress={() => navigation.openDrawer()}>
-        <Image 
-          source={{ uri: userImage }} 
-          style={styles.avatar} 
-        />
-      </TouchableOpacity>
-    </SafeAreaView>
+        {/* Avatar que abre o modal ConfigScreen */}
+        <TouchableOpacity onPress={openConfigMenu}>
+          <Image
+            source={{ uri: userImage }}
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
+      </SafeAreaView>
+
+      {/* Modal do ConfigScreen */}
+      <ConfigScreen visible={configVisible} onClose={closeConfigMenu} />
+    </>
   );
 };
 

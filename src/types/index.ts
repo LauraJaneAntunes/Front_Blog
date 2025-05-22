@@ -9,4 +9,6 @@ export type RootStackParamList = {
   ArticleDetails: { article: any };
   MyArticles: undefined;
   CreateArticle: { article?: any };
+  Profile: undefined;
+  Config: undefined;
 };

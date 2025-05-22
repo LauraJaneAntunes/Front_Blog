@@ -180,7 +180,6 @@ const HomeScreen = ({ navigation }: any) => {
 
   return (
     <>
-      <StatusBar barStyle="light-content" />
       <View style={styles.container}>
         <Header userImage={userImage} />
         <ScrollView contentContainerStyle={styles.scrollContent}>

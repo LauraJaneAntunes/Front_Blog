@@ -4,6 +4,7 @@ import { RootStackParamList } from '../types';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { useFonts as useIrishFonts, IrishGrover_400Regular } from '@expo-google-fonts/irish-grover';
 import { useFonts as useMontserratFonts, Montserrat_400Regular } from '@expo-google-fonts/montserrat';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
@@ -13,7 +14,7 @@ const LoadingScreen = () => {
   const [irishLoaded] = useIrishFonts({ IrishGrover_400Regular });
   const [montserratLoaded] = useMontserratFonts({ Montserrat_400Regular });
 
-  // Efeito de animação dos pontinhos
+  // Animação dos pontinhos
   useEffect(() => {
     const interval = setInterval(() => {
       setDots((prevDots) => (prevDots.length >= 3 ? '' : prevDots + '.'));
@@ -22,19 +23,29 @@ const LoadingScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Redireciona para tela de login após 3s
+  // Checar token e navegar
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
-    }, 3000);
+    const checkTokenAndNavigate = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: token ? 'Home' : 'Login' }],
+        });
+      } catch (error) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      }
+    };
+
+    // Dá um tempo pra animação rodar antes de navegar
+    const timeout = setTimeout(checkTokenAndNavigate, 2000);
 
     return () => clearTimeout(timeout);
   }, [navigation]);
 
-  // Caso as fontes não estejam carregadas, exibe uma mensagem de carregamento
   if (!irishLoaded || !montserratLoaded) {
     return (
       <View style={styles.container}>
@@ -68,7 +79,7 @@ const styles = StyleSheet.create({
     fontFamily: 'IrishGrover_400Regular',
     color: '#FFF',
     marginBottom: 0,
-    lineHeight: 120, 
+    lineHeight: 120,
   },
   quoteText: {
     fontSize: 16,

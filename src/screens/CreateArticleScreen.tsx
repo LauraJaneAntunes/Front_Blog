@@ -5,9 +5,12 @@ import { RootStackParamList } from '../types';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import axios from 'axios';
+import { API_BASE_URL } from '../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CreateArticle = () => {
-    const route = useRoute<RouteProp<RootStackParamList, 'CreateArticle'>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'CreateArticle'>>();
   const navigation = useNavigation();
   const article = route.params?.article;
 
@@ -17,21 +20,52 @@ const CreateArticle = () => {
 
   useEffect(() => {
     if (article) {
-      setBanner(article.banner || '');
-      setTitle(article.title || '');
-      setText(article.text || '');
+      setBanner(article.imagemDestacada || '');
+      setTitle(article.titulo || '');
+      setText(article.conteudo || '');
     }
   }, [article]);
 
-  const handleSave = () => {
-    if (article) {
-      console.log('Atualizar artigo:', { banner, title, text });
-      // Aqui você pode colocar a lógica de update
-    } else {
-      console.log('Criar artigo:', { banner, title, text });
-      // Aqui você pode colocar a lógica de criação
+  const handleSave = async () => {
+  if (!banner || !title || !text) {
+    alert('Por favor, preencha todos os campos.');
+    return;
+  }
+
+  try {
+    const token = await AsyncStorage.getItem('userToken');
+    if (!token) {
+      alert('Usuário não autenticado. Faça login novamente.');
+      return;
     }
-  };
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    if (article) {
+      await axios.put(`${API_BASE_URL}/artigos/${article.id}`, {
+        titulo: title,
+        conteudo: text,
+        imagemDestacada: banner,
+      }, config);
+      alert('Artigo atualizado com sucesso!');
+    } else {
+      await axios.post(`${API_BASE_URL}/artigos`, {
+        titulo: title,
+        conteudo: text,
+        imagemDestacada: banner,
+      }, config);
+      alert('Artigo criado com sucesso!');
+    }
+    navigation.goBack();
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'Erro ao salvar artigo';
+    alert(`Erro: ${message}`);
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -107,4 +141,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateArticle;
+export default CreateArticle; 
