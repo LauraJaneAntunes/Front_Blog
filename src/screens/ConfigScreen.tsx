@@ -4,16 +4,27 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity, 
-  Modal,
+  Modal, 
   Dimensions 
 } from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
 import { deleteToken } from '../services/storage';
+
+import { useFonts } from 'expo-font';
 
 const { width, height } = Dimensions.get('window');
 
 const ConfigScreen = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const navigation = useNavigation<any>();
+
+  const [fontsLoaded] = useFonts({
+    'IrishGrover-Regular': require('../../assets/fonts/IrishGrover-Regular.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return null; // ou algum loader
+  }
 
   const handleNavigateToProfile = () => {
     navigation.navigate('Profile');
@@ -37,12 +48,7 @@ const ConfigScreen = ({ visible, onClose }: { visible: boolean; onClose: () => v
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
+    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.container}>
         <View style={styles.menuContainer}>
           <View style={styles.header}>
@@ -53,32 +59,20 @@ const ConfigScreen = ({ visible, onClose }: { visible: boolean; onClose: () => v
           </View>
 
           <View style={styles.menuItems}>
-            <TouchableOpacity 
-              style={styles.menuItem} 
-              onPress={handleNavigateToProfile}
-            >
+            <TouchableOpacity style={styles.menuItem} onPress={handleNavigateToProfile}>
               <Text style={styles.menuItemText}>Perfil</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.menuItem} 
-              onPress={handleNavigateToMyArticles}
-            >
+            <TouchableOpacity style={styles.menuItem} onPress={handleNavigateToMyArticles}>
               <Text style={styles.menuItemText}>Meus Artigos</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.menuItem} 
-              onPress={handleNavigateToCreateArticle}
-            >
+            <TouchableOpacity style={styles.menuItem} onPress={handleNavigateToCreateArticle}>
               <Text style={styles.menuItemText}>Criar novo Artigo</Text>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity 
-            style={styles.logoutButton} 
-            onPress={handleLogout}
-          >
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>Sair</Text>
           </TouchableOpacity>
         </View>
@@ -109,8 +103,8 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   logo: {
+    fontFamily: 'IrishGrover-Regular',
     fontSize: 24,
-    fontWeight: 'bold',
     color: '#000',
   },
   closeButton: {
