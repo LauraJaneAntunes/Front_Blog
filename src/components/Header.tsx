@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AntDesign } from '@expo/vector-icons'; // Ícone de +
+import { AntDesign } from '@expo/vector-icons';
 
 import ConfigScreen from '../screens/ConfigScreen';
 
-type HeaderProps = {
-  userImage: string;
-};
+// Defina a imagem do usuário diretamente aqui
+const userImage = 'https://cdn-icons-png.flaticon.com/512/616/616408.png';
 
-const Header: React.FC<HeaderProps> = ({ userImage }) => {
+const Header: React.FC = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [configVisible, setConfigVisible] = useState(false);
@@ -32,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
             <Text style={styles.link}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Articles')}>
-            <Text style={styles.link}>Artigo</Text>
+            <Text style={styles.link}>Artigos</Text>
           </TouchableOpacity>
         </View>
 
@@ -61,16 +60,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    elevation: 4,
-    shadowColor: '#000',
+    paddingHorizontal: 6,
     shadowOpacity: 0.2,
     shadowRadius: 2,
     shadowOffset: { width: 0, height: 2 },
   },
   linksContainer: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 30,
   },
   link: {
     color: '#181818',
