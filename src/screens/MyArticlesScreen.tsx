@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import {getToken} from '../services/storage';
+import { getToken } from '../services/storage';
 import Header from '../components/Header';
+import Button from 'components/Button';
 
 const screenWidth = Dimensions.get('window').width - 30;
 
@@ -25,8 +26,7 @@ type Article = {
   atualizadoEm: string;
 };
 
-export default function MyArticlesScreen({navigation}: any) {
-
+export default function MyArticlesScreen({ navigation }: any) {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
@@ -39,7 +39,12 @@ export default function MyArticlesScreen({navigation}: any) {
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://192.168.0.100:3000/api/artigos');
+      const token = await getToken();
+      const response = await axios.get('http://192.168.0.100:3000/api/artigos/meus', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const fetchedArticles = response.data.map((artigo: any) => ({
         id: artigo.id,
         titulo: artigo.titulo,
@@ -68,14 +73,12 @@ export default function MyArticlesScreen({navigation}: any) {
   const deleteArticle = async (id: number) => {
     const token = await getToken();
     try {
-
-    await axios.delete(`http://192.168.0.100:3000/api/artigos/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      await axios.delete(`http://192.168.0.100:3000/api/artigos/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       closeModal();
-      // Atualiza lista após deletar
       setArticles(prev => prev.filter(article => article.id !== id));
     } catch (error) {
       console.error('Erro ao deletar artigo:', error);
@@ -85,17 +88,14 @@ export default function MyArticlesScreen({navigation}: any) {
   const renderItem = ({ item }: { item: Article }) => (
     <View style={styles.card}>
       <Image source={{ uri: item.imagemDestacada }} style={styles.image} />
-
       <View style={styles.infoContainer}>
         <Text style={styles.title}>{item.titulo}</Text>
-
         <View style={styles.bottomRow}>
           <View style={{ flex: 1 }}>
             <Text style={styles.date}>Criado em: {item.criadoEm}</Text>
             <Text style={styles.date}>Alterado em: {item.atualizadoEm}</Text>
           </View>
         </View>
-
         <View style={styles.actionsRow}>
           <View style={styles.likesContainer}>
             <TouchableOpacity style={styles.likeButton}>
@@ -103,7 +103,6 @@ export default function MyArticlesScreen({navigation}: any) {
             </TouchableOpacity>
             <Text style={styles.likesCount}>16</Text>
           </View>
-
           <View style={styles.actions}>
             <TouchableOpacity onPress={() => openDeleteModal(item)}>
               <Feather name="trash-2" size={20} color="#ff4444" />
@@ -126,6 +125,14 @@ export default function MyArticlesScreen({navigation}: any) {
 
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
+      ) : articles.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Nenhum artigo encontrado.</Text>
+          <Button
+            onPress={() => navigation.navigate('CreateArticle')}
+            title="Clique aqui para adicionar"
+          />
+        </View>
       ) : (
         <FlatList
           data={articles}
@@ -146,7 +153,6 @@ export default function MyArticlesScreen({navigation}: any) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Excluir Artigo?</Text>
-
             {selectedArticle && (
               <View style={styles.articlePreview}>
                 <Image source={{ uri: selectedArticle.imagemDestacada }} style={styles.previewImage} />
@@ -157,11 +163,9 @@ export default function MyArticlesScreen({navigation}: any) {
                 </View>
               </View>
             )}
-
             <Text style={styles.warningText}>
               Tem certeza de que deseja excluir este artigo? Esta ação não poderá ser desfeita.
             </Text>
-
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={styles.cancelButton}
@@ -170,7 +174,6 @@ export default function MyArticlesScreen({navigation}: any) {
               >
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
               </TouchableOpacity>
-
               <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={() => deleteArticle(selectedArticle?.id || 0)}
@@ -344,5 +347,16 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  emptyText: {
+    fontSize: 18,
+    marginBottom: 16,
+    color: '#666',
   },
 });
