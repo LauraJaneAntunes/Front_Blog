@@ -1,219 +1,129 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  StatusBar,
-  ScrollView,
-  Text,
-  Image,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
-import * as Font from 'expo-font';
+import {View, StyleSheet, ScrollView, Text, Image, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
+import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import { formatDate } from '../utils/formatDate';
 import Header from '../components/Header';
-import { Dimensions } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 
-const screenWidth = Dimensions.get('window').width - 30;
-
-// Tipo para os artigos
-type Article = {
-  id: string;
-  title: string;
-  author: string;
-  date: string;
-  excerpt: string;
-  content: string;
-  image: string;
-  description?: string;
-};
-
-// Dados simulados
-const featuredArticle: Article = {
-  id: '1',
-  title: 'Artigo em destaque',
-  author: 'Autor Exemplo',
-  date: '21/05/2025',
-  excerpt: 'Este é um resumo do artigo em destaque na home.',
-  content: 'Conteúdo completo do artigo em destaque.',
-  image: 'https://picsum.photos/600/400',
-};
-
-const newsArticles: Article[] = [
-  {
-    id: '2',
-    title: 'Notícia 1',
-    author: 'Jornalista 1',
-    date: '20/05/2025',
-    excerpt: 'Trecho da notícia 1 para mostrar na seção News.',
-    content: 'Conteúdo completo da notícia 1',
-    image: 'https://picsum.photos/300/200?1',
-  },
-  {
-    id: '3',
-    title: 'Notícia 2',
-    author: 'Jornalista 2',
-    date: '19/05/2025',
-    excerpt: 'Trecho da notícia 2 para mostrar na seção News.',
-    content: 'Conteúdo completo da notícia 2',
-    image: 'https://picsum.photos/300/200?2',
-  },
-];
-
-const topVotedArticles: Article[] = [
-  {
-    id: '4',
-    title: 'Mais votado 1',
-    author: 'Autor A',
-    date: '18/05/2025',
-    excerpt: '',
-    content: '',
-    image: 'https://picsum.photos/80/60?3',
-    description: 'Descrição rápida do artigo mais votado 1',
-  },
-  {
-    id: '5',
-    title: 'Mais votado 2',
-    author: 'Autor B',
-    date: '17/05/2025',
-    excerpt: '',
-    content: '',
-    image: 'https://picsum.photos/80/60?4',
-    description: 'Descrição rápida do artigo mais votado 2',
-  },
-];
-
-// Componente do card de artigo
-const ArticleCard = ({
-  article,
-  imageSize,
-  onPress,
-}: {
-  article: Article;
-  imageSize: 'small' | 'medium' | 'large';
-  onPress?: (id: string) => void;
-}) => {
-  
-    const sizes = {
-      small: { width: 80, height: 60 },
-      medium: { width: screenWidth, height: 200 },
-      large: { width: screenWidth, height: 300 },
-    };
-
+const NewsItem = ({ article, onPress }: any) => {
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={() => onPress && onPress(article.id)}
-      style={styles.articleCard}
-    >
-      <Image
-        source={{ uri: article.image }}
-        style={[styles.articleImage, sizes[imageSize]]}
-        resizeMode="cover"
-      />
-      <Text style={styles.articleTitle}>{article.title}</Text>
-      <Text style={styles.articleAuthorDate}>
-        {article.author} - {formatDate(article.date)}
-      </Text>
-      {article.excerpt ? (
-        <Text style={styles.articleExcerpt}>{article.excerpt}</Text>
-      ) : null}
-    </TouchableOpacity>
-  );
-};
-
-// Componente para itens de notícias (News)
-const NewsItem = ({
-  article,
-  onPress,
-}: {
-  article: Article;
-  onPress?: (id: string) => void;
-}) => {
-  return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={() => onPress && onPress(article.id)}
-      style={styles.newsItem}
-    >
+    <TouchableOpacity onPress={() => onPress(article.id)} style={styles.newsItem}>
       <Text style={styles.newsTitle}>{article.title}</Text>
       <Text style={styles.newsExcerpt}>{article.excerpt}</Text>
     </TouchableOpacity>
   );
 };
 
-// Componente do carousel de mais votados
-const CarouselItem = ({
-  article,
-  number,
-}: {
-  article: Article;
-  number: number;
-}) => {
+const CarouselItem = ({ article, number }: any) => {
   return (
-    <View style={styles.carouselItem}>
-      <View style={{ position: 'relative' }}>
-        <Image
-          source={{ uri: article.image }}
-          style={styles.carouselImage}
-          resizeMode="cover"
-        />
-        <View style={styles.carouselNumber}>
-          <Text style={{ color: 'white', fontWeight: 'bold' }}>#{number}</Text>
+    <TouchableOpacity style={styles.carouselItem}>
+      <Image
+        source={{ uri: article.imagem || 'https://picsum.photos/600/400' }}
+        style={styles.carouselImage}
+      />
+      <Text style={styles.carouselDescription} numberOfLines={3}>
+        {article.titulo}
+      </Text>
+      <View style={styles.carouselNumber}>
+        <Text style={styles.carouselNumberText}>{number}</Text>
+      </View>
+      <View style={styles.footerCarousel}>
+          <AntDesign name="heart" size={16} color="#ff4444" />
+          <Text style={styles.likesCount}>16</Text>
+          <Text style={styles.carouselDate}>{formatDate(article.publicadoEm)}</Text>
         </View>
-      </View>
-      <Text style={styles.carouselDescription}>{article.description}</Text>
-      <View style={styles.carouselFooter}>
-        <Text style={{ fontSize: 18 }}>❤️</Text>
-        <Text style={styles.carouselDate}>{formatDate(article.date)}</Text>
-      </View>
-    </View>
+      
+
+    </TouchableOpacity>
   );
 };
 
-// Tela Home
 const HomeScreen = ({ navigation }: any) => {  
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  
-useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        'IrishGrover-Regular': require('../../assets/fonts/IrishGrover-Regular.ttf'),
-      });
-      setFontsLoaded(true);
-    }
-    loadFonts();
-  }, []);
-
-  if (!fontsLoaded) {
-    return <View><Text>Carregando fontes...</Text></View>;
-  }
+  const [featuredArticle, setFeaturedArticle] = useState<any>(null);
+  const [otherArticles, setOtherArticles] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [carouselArticles, setCarouselArticles] = useState<any[]>([]);
 
   const handleArticlePress = (id: string) => {
     navigation.navigate('Articles', { articleId: id });
   };
+  const getExcerpt = (content: string, length = 100) => {
+    if (!content) return '';
+    return content.length > length ? content.substring(0, length) + '...' : content;
+  };
+
+  const fetchArticles = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/artigos`);
+      const articles = response.data;
+
+      if (articles.length > 0) {
+        const [first, ...rest] = articles;
+        setFeaturedArticle(first);
+        setOtherArticles(rest.slice(0, 4));
+
+        const lastArticles = [...articles].reverse().slice(0, 4);
+        setCarouselArticles(lastArticles);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar artigo em destaque:', error);
+      Alert.alert('Erro', 'Não foi possível carregar o artigo em destaque.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);  
 
   return (
     <>
       <View style={styles.container}>
         <Header />
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Artigo em destaque */}
-          <View style={styles.section}>
-            <ArticleCard
-              article={featuredArticle}
-              imageSize="large"
-              onPress={handleArticlePress}
-            />
+          <View style={styles.content}>
+            {loading ? (
+              <ActivityIndicator size="large" color="#181818" />
+            ) : featuredArticle ? (
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => handleArticlePress(featuredArticle.id)}
+                style={styles.card}
+              >
+                <Image
+                  source={{
+                    uri:
+                      featuredArticle.imagem ||
+                      'https://picsum.photos/600/400',
+                  }}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+                <View style={styles.textContainer}>
+                  <Text style={styles.title}>{featuredArticle.titulo}</Text>
+                  <Text style={styles.authorDate}>
+                    Por {featuredArticle.autor.nome} -{' '}
+                    {formatDate(featuredArticle.publicadoEm)}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <Text style={{ color: '#181818' }}>Nenhum artigo encontrado.</Text>
+            )}
           </View>
 
-          {/* Notícia */}
-          <View style={styles.section}>
+          {/* News */}
+          <View style={[styles.section, { backgroundColor: '#181818', borderRadius: 8, padding: 15 }]}>
             <Text style={styles.sectionNewTitle}>New</Text>
-            {newsArticles.map((article) => (
+            {otherArticles.map((article) => (
               <NewsItem
                 key={article.id}
-                article={article}
+                article={{
+                  id: article.id,
+                  title: article.titulo,
+                  excerpt: getExcerpt(article.conteudo, 80),                }}
                 onPress={handleArticlePress}
               />
             ))}
@@ -225,7 +135,7 @@ useEffect(() => {
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}
-              data={topVotedArticles}
+              data={carouselArticles}
               keyExtractor={(item) => item.id}
               renderItem={({ item, index }) => (
                 <CarouselItem article={item} number={index + 1} />
@@ -241,11 +151,38 @@ useEffect(() => {
 
 export default HomeScreen;
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#fff',
+  },
+  content: {
+    padding: 15,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  image: {
+    width: 335,
+    height: 220,
+    borderRadius: 16,
+  },
+  textContainer: {
+    padding: 10,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#181818',
+    marginBottom: 6,
+  },
+  authorDate: {
+    color: '#181818',
+    marginBottom: 8,
+    fontSize: 12,
   },
   scrollContent: {
     padding: 15,
@@ -254,59 +191,43 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 10,
   },
   sectionNewTitle: {
-    fontSize: 22,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 10,
-    fontFamily: 'IrishGrover-Regular'
-  },
-  articleCard: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 10,
-    padding: 10,
-  },
-  articleImage: {
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  articleTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  articleAuthorDate: {
-    fontSize: 14,
-    color: '#aaa',
-    marginBottom: 5,
-  },
-  articleExcerpt: {
-    fontSize: 16,
-    color: '#ddd',
+    fontFamily: 'IrishGrover-Regular',
   },
   newsItem: {
     marginBottom: 15,
   },
   newsTitle: {
-    fontSize: 18,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#fff',
+    marginBottom: 4,
+  },
+  excerpt: {
+    fontSize: 12,
+    color: '#fff',
+    marginTop: 8
   },
   newsExcerpt: {
     fontSize: 15,
-    color: '#ccc',
+    color: '#fff',
   },
   carouselItem: {
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#fff',
     borderRadius: 10,
     marginRight: 15,
     padding: 10,
     width: 150,
+    justifyContent: 'center',
   },
   carouselImage: {
     width: 80,
@@ -315,25 +236,38 @@ const styles = StyleSheet.create({
   },
   carouselNumber: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    top: 6,
+    right: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderTopLeftRadius: 10,
-    borderBottomRightRadius: 10,
+  },
+  carouselNumberText: {
+    color: '#181818',
+    fontWeight: 'bold',
+    fontSize: 48,
   },
   carouselDescription: {
-    color: '#ddd',
+    color: '#181818',
     marginVertical: 8,
   },
-  carouselFooter: {
+  footerCarousel: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 4,
   },
   carouselDate: {
-    color: '#aaa',
+    color: '#181818',
     fontSize: 12,
+  },
+  likeButton: {
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  likesCount: {
+    fontSize: 14,
+    color: '#000',
   },
 });
