@@ -1,3 +1,4 @@
+//src\screens\ArticleDetailsScreen.tsx
 import React from 'react';
 import {
   View,
