@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { getToken } from '../services/storage';
 import Header from '../components/Header';
@@ -41,11 +42,12 @@ export default function MyArticlesScreen({ navigation }: any) {
     try {
       setLoading(true);
       const token = await getToken();
-      const response = await axios.get('http://192.168.0.100:3000/api/artigos/meus', {
+      const response = await axios.get(`${API_BASE_URL}/artigos/meus`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
       const fetchedArticles = response.data.map((artigo: any) => ({
         id: artigo.id,
         titulo: artigo.titulo,
@@ -88,7 +90,10 @@ export default function MyArticlesScreen({ navigation }: any) {
 
   const renderItem = ({ item }: { item: Article }) => (
     <View style={styles.card}>
-      <Image source={{ uri: item.imagemDestacada }} style={styles.image} />
+      <Image 
+        source={{ uri: item.imagemDestacada || 'https://picsum.photos/100/100' }} 
+        style={styles.image} 
+      />
       <View style={styles.infoContainer}>
         <Text style={styles.title}>{item.titulo}</Text>
         <View style={styles.bottomRow}>
@@ -154,7 +159,6 @@ export default function MyArticlesScreen({ navigation }: any) {
             <Text style={styles.modalTitle}>Excluir Artigo?</Text>
             {selectedArticle && (
               <View style={styles.articlePreview}>
-                <Image source={{ uri: selectedArticle.imagemDestacada }} style={styles.previewImage} />
                 <View style={styles.previewInfo}>
                   <Text style={styles.previewTitle}>{selectedArticle.titulo}</Text>
                   <Text style={styles.previewDate}>Criado em: {selectedArticle.criadoEm}</Text>
